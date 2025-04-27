@@ -3,7 +3,7 @@ from discord import app_commands
 from discord.ext import commands
 from discord.ui import Button, View
 
-TOKEN = os.environ.get("TOKEN")
+TOKEN = os.getenv("TOKEN")
 
 intents = discord.Intents.default()
 intents.guilds = True
@@ -57,4 +57,4 @@ async def regret(interaction: discord.Interaction, invites: int, portals: int, l
 
     await interaction.response.send_message("click button to close ticket", view=view)
 
-bot.run('TOKEN')
+bot.run(TOKEN)
