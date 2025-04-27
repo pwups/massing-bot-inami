@@ -100,7 +100,7 @@ async def lose(interaction: discord.Interaction):
     view.original_message = message
 
     # Ephemeral reply
-    await interaction.response.send_message(f"{channel.mention}", ephemeral=True)
+    await interaction.response.send_message(f"_ _\n\n\n_ _　　　　<:0wb:1315190556875292672>          ⁺     ⊹\n_ _　　　　{channel.mention}\n\n\n_ _", ephemeral=True)
 
 @bot.event
 async def on_ready():
