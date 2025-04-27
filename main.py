@@ -109,4 +109,17 @@ async def on_ready():
     except Exception as e:
         print(e)
 
+@bot.event
+async def on_ready():
+    print(f"Logged in as {bot.user}")
+    try:
+        synced = await bot.tree.sync()
+        print(f"Synced {len(synced)} slash commands.")
+    except Exception as e:
+        print(e)
+
+    # Set custom status
+    activity = discord.Activity(type=discord.ActivityType.listening, name="nobody gets me.")
+    await bot.change_presence(status=discord.Status.dnd, activity=activity)
+
 bot.run(os.getenv("DISCORD_TOKEN"))
