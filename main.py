@@ -124,4 +124,4 @@ async def on_ready():
     activity = discord.Activity(type=discord.ActivityType.listening, name="nobody gets me.")
     await bot.change_presence(status=discord.Status.dnd, activity=activity)
 
-bot.run('TOKEN')
+bot.run(TOKEN)
