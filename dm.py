@@ -2,6 +2,8 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
+TOKEN = os.environ.get("TOKEN")
+
 intents = discord.Intents.default()
 intents.guilds = True
 intents.members = True  # Needed to DM members
@@ -36,4 +38,4 @@ async def dm_error(interaction: discord.Interaction, error):
     else:
         await interaction.response.send_message("An error occurred.", ephemeral=True)
 
-bot.run(os.getenv("DISCORD_TOKEN"))
+bot.run('TOKEN')
