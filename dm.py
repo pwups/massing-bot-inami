@@ -38,4 +38,4 @@ async def dm_error(interaction: discord.Interaction, error):
     else:
         await interaction.response.send_message("An error occurred.", ephemeral=True)
 
-bot.run('TOKEN')
+bot.run(TOKEN)
