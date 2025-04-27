@@ -2,7 +2,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
-TOKEN = os.environ.get("TOKEN")
+TOKEN = os.getenv("TOKEN")
 
 intents = discord.Intents.default()
 intents.guilds = True
@@ -57,4 +57,4 @@ async def done_error(interaction: discord.Interaction, error):
     else:
         await interaction.response.send_message("An error occurred.", ephemeral=True)
 
-bot.run('TOKEN')
+bot.run(TOKEN)
