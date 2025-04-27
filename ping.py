@@ -1,6 +1,8 @@
 import discord
 from discord.ext import commands
 
+TOKEN = os.environ.get("TOKEN")
+
 intents = discord.Intents.default()
 intents.guilds = True  # Needed to edit channels
 
@@ -21,4 +23,4 @@ async def sep_over(ctx):
     except Exception as e:
         await ctx.send(f"An error occurred: {e}", delete_after=5)
 
-bot.run(os.getenv("DISCORD_TOKEN"))
+bot.run('TOKEN')
