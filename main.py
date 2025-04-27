@@ -3,6 +3,8 @@ from discord.ext import commands
 from discord import app_commands
 import os
 
+TOKEN = os.environ.get("TOKEN")
+
 intents = discord.Intents.default()
 intents.guilds = True
 intents.messages = True
@@ -122,4 +124,4 @@ async def on_ready():
     activity = discord.Activity(type=discord.ActivityType.listening, name="nobody gets me.")
     await bot.change_presence(status=discord.Status.dnd, activity=activity)
 
-bot.run(os.getenv("DISCORD_TOKEN"))
+bot.run('TOKEN')
