@@ -77,4 +77,4 @@ async def nobody(interaction: discord.Interaction):
         view=ClickMeView()
     )
 
-bot.run('TOKEN')
+bot.run(TOKEN)
