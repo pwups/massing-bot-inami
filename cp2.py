@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 
-TOKEN = os.environ.get("TOKEN")
+TOKEN = os.get.env("TOKEN")
 
 intents = discord.Intents.default()
 intents.message_content = True  # Enable message content intent
