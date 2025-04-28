@@ -238,8 +238,7 @@ async def regret(
         await interaction.followup.send("Review channel not found.")  # <-- changed to followup.send
         return
 
-    content = (
-        "‎_ _\n                                **__{invites}__    invites**    ◟︵ ｡\n[⠀]( {link} )"
+    content = ‎f"_ _\n                                **__{invites}__    invites**    ◟︵ ｡\n[⠀]( {link} )"
 
     await interaction.followup.send(  # <-- changed to followup.send
         content=confirmation_message,
