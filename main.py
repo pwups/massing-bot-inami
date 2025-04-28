@@ -238,11 +238,12 @@ async def regret(
         return
 
     content = f"_ _\n                                **__{invites}__    invites**    ◟︵ ｡\n[⠀]({link})"
+    
+        embed = discord.Embed(description=f"(+{portals}p)‎ ‎‎ ‎ ‎ ‎ ‎‎ ‎ ‎ ‎‎‎‎ ‎ ‎ ‎ ‎ ‎‎ ‎ ‎ ‎‎ ‎‎ ‎ ‎ ‎ ‎ཀ‎ ‎‎ ‎ ‎ ‎ ‎‎ ‎ ‎ ‎‎‎‎ ‎ ‎ ‎ ‎ ‎‎ ‎ ‎ ‎‎ ‎‎ ‎ ‎ ‎ {type}")
+        embed.set_image(url="https://media.discordapp.net/attachments/1365870103102492772/1365925776956063834/Untitled201_20250427134111.png?ex=680fbdc2&is=680e6c42&hm=8ddf1e700f1f42c27f670b720fcec7e123b876fb9d9fec06c87036a3b4eec8cd&=&format=webp&quality=lossless")
+        embed.set_footer(text=f"{user.name}‎ㅤㅤㅤ‎⟢ㅤㅤㅤthankq for massing", icon_url=user.avatar.url if user.avatar else discord.Embed.Empty)
 
-    await interaction.followup.send(  # ← Here, we send content (not confirmation_message)
-        content=content,
-        view=CloseTicketView()
-    )
+        await review_channel.send(content=content, embed=embed)
 
 # ----- Events -----
 @bot.event
