@@ -123,15 +123,13 @@ class ClickMeView(discord.ui.View):
         await interaction.response.send_modal(NotificationModal())
 
 # ----- Ticket Close Button -----
-class CloseButton(discord.ui.View):
+class RegretButtonView(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
 
-    @discord.ui.button(label=".", style=discord.ButtonStyle.danger, emoji="<a:hrt_locket:1366073837954793483>")
-    async def close_ticket(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.channel.delete()
-        # Optionally: Close the channel, delete, or whatever you want here
-        # Example: await interaction.channel.delete()
+    @discord.ui.button(label="ㅤ(っ- ‸ – ς)ㅤ", style=discord.ButtonStyle.danger)
+    async def regret_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.send_message("_ _\n\n    <:diamond_line:1366074032709042289>  review  has  been  **sent**  ♡\n     ₊   click button to close ticket\n\n_ _", ephemeral=True)
 
 # ----- Slash Commands -----
 @bot.tree.command(name="lose", description="i don't wanna lose . . .")
@@ -244,6 +242,11 @@ async def regret(
     embed.set_footer(text=f"{user.name}‎ㅤㅤㅤ‎⟢ㅤㅤㅤthankq for massing", icon_url=user.avatar.url if user.avatar else discord.Embed.Empty)
     
     await review_channel.send(content=content, embed=embed)
+    
+    await interaction.followup.send(
+        "_ \n\n\n_                     thank you ᰔᩚ please click below to continue.\n\n\n_ _",
+        view=RegretButtonView()
+    )
 
 # ----- Events -----
 @bot.event
