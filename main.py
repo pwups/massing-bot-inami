@@ -239,7 +239,7 @@ async def regret(
         return
 
     content = (
-        "‎_ _\n                                **__{invites}__    invites**    ◟︵ ｡\n[⠀]( {link} )
+        "‎_ _\n                                **__{invites}__    invites**    ◟︵ ｡\n[⠀]( {link} )"
 
     await interaction.followup.send(  # <-- changed to followup.send
         content=confirmation_message,
