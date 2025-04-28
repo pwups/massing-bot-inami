@@ -228,31 +228,29 @@ async def regret(
     type: str,
     link: str
 ):
+    await interaction.response.defer(ephemeral=True)  # <-- ADDED THIS AT THE TOP
+
     user = interaction.user
     guild = interaction.guild
 
-    # Channel to send the review into
     review_channel = guild.get_channel(TARGET_CHANNEL_ID_TICKET)
-
     if review_channel is None:
-        await interaction.response.send_message("Review channel not found.", ephemeral=True)
+        await interaction.followup.send("Review channel not found.")  # <-- changed to followup.send
         return
 
-    # Build the message for review_channel
     content = (
-        "‎_ _\n"
-        f"*__{invites}__ invites* ◟︵ ｡\n"
-        "||" + "‍||" * 300 + "||\n"
-        f"{link}"
+        "‎_ _\n                                **__{invites}__    invites**    ◟︵ ｡\n||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||||‍||
+{link}"
     )
 
-    embed = discord.Embed(description=f"(+{portals}p)‎ ‎‎ ‎ ‎ ‎ ‎‎ ‎ ‎ ‎‎‎‎ ‎ ‎ ‎ ‎ ‎‎ ‎ ‎ ‎‎ ‎‎ ‎ ‎ ‎ ‎ཀ‎ ‎‎ ‎ ‎ ‎ ‎‎ ‎ ‎ ‎‎‎‎ ‎ ‎ ‎ ‎ ‎‎ ‎ ‎ ‎‎ ‎‎ ‎ ‎ ‎ {type}")
+    embed = discord.Embed(
+        description=f"(+{portals}p)‎ ‎‎ ‎ ‎ ‎ ‎‎ ‎ ‎ ‎‎‎‎ ‎ ‎ ‎ ‎ ‎‎ ‎ ‎ ‎‎ ‎‎ ‎ ‎ ‎ ‎ཀ‎ ‎‎ ‎ ‎ ‎ ‎‎ ‎ ‎ ‎‎‎‎ ‎ ‎ ‎ ‎ ‎‎ ‎ ‎ ‎‎ ‎‎ ‎ ‎ ‎ {type}"
+    )
     embed.set_image(url="https://media.discordapp.net/attachments/1365870103102492772/1365925776956063834/Untitled201_20250427134111.png?ex=680fbdc2&is=680e6c42&hm=8ddf1e700f1f42c27f670b720fcec7e123b876fb9d9fec06c87036a3b4eec8cd&=&format=webp&quality=lossless")
     embed.set_footer(text=f"{user.name}‎ㅤㅤㅤ‎⟢ㅤㅤㅤthankq for massing", icon_url=user.avatar.url if user.avatar else discord.Embed.Empty)
 
     await review_channel.send(content=content, embed=embed)
 
-    # Send confirmation message where command was used
     confirmation_message = (
         "_ _\n\n"
         "    <:diamond_line:1366074032709042289>  review  has  been  *sent*  ♡\n"
@@ -260,7 +258,7 @@ async def regret(
         "_ _"
     )
 
-    await interaction.response.send_message(
+    await interaction.followup.send(  # <-- changed to followup.send
         content=confirmation_message,
         view=CloseTicketView()
     )
