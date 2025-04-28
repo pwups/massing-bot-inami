@@ -168,10 +168,9 @@ async def lose(interaction: discord.Interaction):
 
 @bot.tree.command(name="nobody", description="only like myself when i'm with you . . .")
 async def nobody(interaction: discord.Interaction):
-    await interaction.response.defer(ephemeral=True)
     embed = discord.Embed()
     embed.set_image(url="https://hiphophundred.com/wp-content/uploads/2022/12/Screen-Shot-2022-12-16-at-1.02.56-PM.png")
-    await interaction.followup.send(
+    await interaction.response.send_message(
         content="<:b_blank001:1349341503163732091>\nㅤㅤㅤㅤ<:emoji_2:1315004719063760917>ㅤnobody  gets  me  you  doㅤ᧔♡᧓ \n<:b_blank001:1349341503163732091>",
         embed=embed,
         view=ClickMeView()
@@ -210,17 +209,61 @@ async def dm(interaction: discord.Interaction, user: discord.Member):
     except discord.Forbidden:
         await interaction.followup.send("I couldn't DM that user. They might have DMs off.")
 
+# ----- Regret Command and Close Ticket View -----
+class CloseTicketView(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=None)
+
+    @discord.ui.button(label="", style=discord.ButtonStyle.danger, emoji="<a:hrt_locket:1366073837954793483>", custom_id="close_ticket")
+    async def close_ticket(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.defer()  # Acknowledge the click immediately
+        await interaction.channel.delete()
+
 @bot.tree.command(name="regret", description="regret, self-blame, inability to move on . . .")
-@app_commands.describe(invites="invites gained", portals="other portals that posted", link="invite link", type="server type")
-async def regret(interaction: discord.Interaction, invites: str, portals: str, link: str, type: str):
-    await interaction.response.defer(ephemeral=True)
-    channel = await interaction.guild.create_text_channel(name=f"ticket-{interaction.user.name}", category=None)
-    embed = discord.Embed(
-        description=f"*invites:* {invites}\n**portals:** {portals}\n**link:** {link}\n**type:** {type}",
-        color=BLUE
+@app_commands.describe(invites=". invites gained", portals=". other portals that posted", type=". server type you massed", link=". server invite link")
+async def regret(
+    interaction: discord.Interaction,
+    invites: int,
+    portals: str,
+    type: str,
+    link: str
+):
+    user = interaction.user
+    guild = interaction.guild
+
+    # Channel to send the review into
+    review_channel = guild.get_channel(TARGET_CHANNEL_ID_TICKET)
+
+    if review_channel is None:
+        await interaction.response.send_message("Review channel not found.", ephemeral=True)
+        return
+
+    # Build the message for review_channel
+    content = (
+        "‎_ _\n"
+        f"*__{invites}__ invites* ◟︵ ｡\n"
+        "||" + "‍||" * 300 + "||\n"
+        f"{link}"
     )
-    await channel.send(embed=embed, view=CloseButton())
-    await interaction.followup.send(f"Ticket created: {channel.mention}")
+
+    embed = discord.Embed(description=f"(+{portals}p)‎ ‎‎ ‎ ‎ ‎ ‎‎ ‎ ‎ ‎‎‎‎ ‎ ‎ ‎ ‎ ‎‎ ‎ ‎ ‎‎ ‎‎ ‎ ‎ ‎ ‎ཀ‎ ‎‎ ‎ ‎ ‎ ‎‎ ‎ ‎ ‎‎‎‎ ‎ ‎ ‎ ‎ ‎‎ ‎ ‎ ‎‎ ‎‎ ‎ ‎ ‎ {type}")
+    embed.set_image(url="https://media.discordapp.net/attachments/1365870103102492772/1365925776956063834/Untitled201_20250427134111.png?ex=680fbdc2&is=680e6c42&hm=8ddf1e700f1f42c27f670b720fcec7e123b876fb9d9fec06c87036a3b4eec8cd&=&format=webp&quality=lossless")
+    embed.set_footer(text=f"{user.name}‎ㅤㅤㅤ‎⟢ㅤㅤㅤthankq for massing", icon_url=user.avatar.url if user.avatar else discord.Embed.Empty)
+
+    await review_channel.send(content=content, embed=embed)
+
+    # Send confirmation message where command was used
+    confirmation_message = (
+        "_ _\n\n"
+        "    <:diamond_line:1366074032709042289>  review  has  been  *sent*  ♡\n"
+        "     ₊   click button to close ticket\n\n"
+        "_ _"
+    )
+
+    await interaction.response.send_message(
+        content=confirmation_message,
+        view=CloseTicketView()
+    )
 
 # ----- Events -----
 @bot.event
