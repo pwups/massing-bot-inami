@@ -127,12 +127,11 @@ class CloseButton(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
 
-    @discord.ui.button(style=discord.ButtonStyle.danger, emoji='<:Locked:1365926484736475158>', label=None)
-    async def close(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.defer(ephemeral=True)
-        await interaction.followup.send("Closing ticket...")
-        await asyncio.sleep(2)  # little delay so user sees the "Closing ticket..." message
+    @discord.ui.button(label=".", style=discord.ButtonStyle.danger, emoji="<a:hrt_locket:1366073837954793483>")
+    async def close_ticket(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.channel.delete()
+        # Optionally: Close the channel, delete, or whatever you want here
+        # Example: await interaction.channel.delete()
 
 # ----- Slash Commands -----
 @bot.tree.command(name="lose", description="i don't wanna lose . . .")
@@ -228,20 +227,20 @@ async def regret(
     type: str,
     link: str
 ):
-    await interaction.response.defer(ephemeral=True)  # <-- ADDED THIS AT THE TOP
+    await interaction.response.defer(ephemeral=True)  # Acknowledge the command
 
     user = interaction.user
     guild = interaction.guild
 
     review_channel = guild.get_channel(TARGET_CHANNEL_ID_TICKET)
     if review_channel is None:
-        await interaction.followup.send("Review channel not found.")  # <-- changed to followup.send
+        await interaction.followup.send("Review channel not found.")
         return
 
     content = f"_ _\n                                **__{invites}__    invites**    ◟︵ ｡\n[⠀]({link})"
 
-    await interaction.followup.send(  # <-- changed to followup.send
-        content=confirmation_message,
+    await interaction.followup.send(  # ← Here, we send content (not confirmation_message)
+        content=content,
         view=CloseTicketView()
     )
 
