@@ -11,13 +11,20 @@ intents.messages = True
 intents.message_content = True
 intents.members = True
 
-bot = commands.Bot(command_prefix="!", intents=intents)
+bot = commands.Bot(command_prefix=";", intents=intents)
 
-# Replace with your category ID
+# IDs
 CATEGORY_ID = 1350035164922908714
+TARGET_CHANNEL_ID_NOTIFICATION = 1318526765710184488
+TARGET_CHANNEL_ID_DONE = 1314983771799294092
+TARGET_CHANNEL_ID_TICKET = 1314988692393295922
+REQUIRED_ROLE_ID = 1315151378632540230
 
+# Colors
 DARK_GRAY = discord.Color.from_str("#2C2F33")
+BLUE = discord.Color.from_str("#68829B")
 
+# ----- Lose Modal -----
 class LoseModal(discord.ui.Modal, title="◝（ᵕᵕ✿）◜"):
     server_ad = discord.ui.TextInput(
         label="゜ㅤ──❀ㅤ.ㅤ  ﾟㅤserverㅤad",
@@ -47,15 +54,12 @@ class LoseModal(discord.ui.Modal, title="◝（ᵕᵕ✿）◜"):
 
     async def on_submit(self, interaction: discord.Interaction):
         thread = await self.original_message.create_thread(name="(─‿‿─)")
-
         embed = discord.Embed(description=f"```{self.server_ad.value}```", color=DARK_GRAY)
         await thread.send(content=self.server_ad.value, embed=embed)
-
         await thread.send(self.invite_link.value)
         await thread.send(f"# <:x_x:1350030689256476672> {self.type_info.value}")
-
         await interaction.channel.send(
-            "_ _\n\n\n_ _                 **wait**   for   approval <a:typing_chatbubble:1349316060964454482>\n_ _                  *do  not  ping  anyone.*\n\n\n_ _"
+            "_ \n\n\n _                 *wait*   for   approval <a:typing_chatbubble:1349316060964454482>\n_ _                  *do  not  ping  anyone.*\n\n\n_ _"
         )
 
 class ClickButton(discord.ui.View):
@@ -67,41 +71,147 @@ class ClickButton(discord.ui.View):
     async def click_me_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.send_modal(LoseModal(self.original_message))
 
+# ----- Notification Modal -----
+class NotificationModal(discord.ui.Modal, title="(◠◠ ✿)｡"):
+    notification = discord.ui.TextInput(
+        label="゜ㅤ──❀ㅤ.ㅤ  ﾟㅤnotification",
+        placeholder="ping / dm",
+        required=True,
+        style=discord.TextStyle.short
+    )
+    urgency = discord.ui.TextInput(
+        label="゜ㅤ──❀ㅤ.ㅤ  ﾟㅤurgency",
+        placeholder="don't lie about urgency",
+        required=True,
+        style=discord.TextStyle.short
+    )
+    sep_time = discord.ui.TextInput(
+        label="゜ㅤ──❀ㅤ.ㅤ  ﾟㅤsepㅤtime",
+        placeholder="batch / 1h / 2h / ovn",
+        required=True,
+        style=discord.TextStyle.short
+    )
+
+    async def on_submit(self, interaction: discord.Interaction):
+        user = interaction.user
+        current_channel = interaction.channel
+        target_channel = interaction.guild.get_channel(TARGET_CHANNEL_ID_NOTIFICATION)
+        if target_channel:
+            await target_channel.send(
+                f"\n_ _               (｡˙ヮ˙) ⠀ׂ   ִ    *{self.sep_time.value}* ⠀<a:cd_gif:1365839721057620021> ⠀{user.mention}\n"
+                f"_ _               **{self.urgency.value}**⠀ヽ⠀**{self.notification.value}**⠀ヽ⠀{current_channel.mention}\n_ _"
+            )
+        try:
+            await current_channel.edit(name=f"{self.sep_time.value}．{user.name}")
+        except discord.Forbidden:
+            await interaction.followup.send("I don't have permission to edit the channel name.", ephemeral=True)
+            return
+
+        await interaction.response.send_message(
+            "_ \n\n _ ⠀ ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀ ⠀[*queued*](https://discord.com/channels/1314982962919379044/1318526765710184488)⠀♡\n"
+            "_ _  ⠀  ⠀ ⠀⠀⠀⠀ ⠀⠀⠀⠀ *check  pings  &  dms.*\n\n_ _",
+            ephemeral=False
+        )
+
+class ClickMeView(discord.ui.View):
+    @discord.ui.button(label="ㅤtook me out to the ballet . . .ㅤ", style=discord.ButtonStyle.secondary)
+    async def click_me(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.send_modal(NotificationModal())
+        # ----- Ticket Close Button -----
+class CloseButton(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=None)
+
+    @discord.ui.button(style=discord.ButtonStyle.danger, emoji='<:Locked:1365926484736475158>', label=None)
+    async def close(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.send_message("Closing ticket...", ephemeral=True)
+        await interaction.channel.delete()
+
+# ----- Slash Commands -----
 @bot.tree.command(name="lose", description="i don't wanna lose . . .")
 async def lose(interaction: discord.Interaction):
     guild = interaction.guild
     user = interaction.user
-
     category = discord.utils.get(guild.categories, id=CATEGORY_ID)
     if not category:
         await interaction.response.send_message("Category not found.", ephemeral=True)
         return
 
-    # Permissions: hide from everyone, allow the user
     overwrites = {
         guild.default_role: discord.PermissionOverwrite(view_channel=False),
         user: discord.PermissionOverwrite(view_channel=True, send_messages=True, read_messages=True)
     }
 
-    channel_name = f"wait．{user.name}"
-    channel = await guild.create_text_channel(name=channel_name, category=category, overwrites=overwrites)
+    channel = await guild.create_text_channel(name=f"wait．{user.name}", category=category, overwrites=overwrites)
 
     embed = discord.Embed(
         description="<:b_blank001:1349341503163732091>\n\nㅤㅤㅤㅤ<:emoji_2:1315004719063760917>ㅤnobody  gets  me  you  doㅤ᧔♡᧓ \n<:b_blank001:1349341503163732091>",
         color=DARK_GRAY
     )
-    embed.set_image(url="https://uproxx.com/wp-content/uploads/2022/12/sza-nobody-gets-me-video.jpg?w=640")
+    embed.set_image(url="https://uproxx.com/wp-content/uploads/2022/12/sza-nobody-gets-me-video.jpg")
 
-    view = ClickButton(None)  # Will assign original_message later
-
+    view = ClickButton(None)
     message = await channel.send(embed=embed, view=view)
     view.original_message = message
 
     await interaction.response.send_message(
-        f"_ _\n\n\n_ _　　　　<:0wb:1315190556875292672>          ⁺     ⊹\n_ _　　　　{channel.mention}\n\n\n_ _",
+        f"_ \n\n\n _　　　　<:0wb:1315190556875292672>          ⁺     ⊹\n_ _　　　　{channel.mention}\n\n\n_ _",
         ephemeral=True
     )
 
+@bot.tree.command(name="nobody", description="only like myself when i'm with you . . .")
+async def nobody(interaction: discord.Interaction):
+    embed = discord.Embed()
+    embed.set_image(url="https://hiphophundred.com/wp-content/uploads/2022/12/Screen-Shot-2022-12-16-at-1.02.56-PM.png")
+    await interaction.response.send_message(
+        content="<:b_blank001:1349341503163732091>\nㅤㅤㅤㅤ<:emoji_2:1315004719063760917>ㅤnobody  gets  me  you  doㅤ᧔♡᧓ \n<:b_blank001:1349341503163732091>",
+        embed=embed,
+        view=ClickMeView()
+    )
+
+@bot.tree.command(name="done", description="miel only")
+@app_commands.describe(sep="sep time", user="who", link="invite link", edit="ticket channel (optional)")
+@app_commands.checks.has_role(REQUIRED_ROLE_ID)
+async def done(interaction: discord.Interaction, sep: str, user: discord.User, link: str, edit: discord.TextChannel = None):
+    target_channel = interaction.guild.get_channel(TARGET_CHANNEL_ID_DONE)
+    if not target_channel:
+        await interaction.response.send_message("Target channel not found.", ephemeral=True)
+        return
+
+    await target_channel.send(f"_ \n\n _                          ₊ ⊹      *{sep}* <a:idk_what_this_is:1365916326048039032> {user.mention}\n\n_ _ || {link}")
+    await target_channel.send("_ _\n\n\n-# _ _  <a:freedom:1350041904099889182>  (｡˘﹏˘｡)っ  *wait  awhile  to  count  invites*         *!***\n\n\n_ _")
+
+    if edit:
+        try:
+            await edit.edit(name="w4s")
+        except discord.Forbidden:
+            await interaction.response.send_message("I don't have permission to rename that channel.", ephemeral=True)
+            return
+
+    await interaction.response.send_message("Done!", ephemeral=True)
+
+@bot.tree.command(name="dm", description="miel only")
+@app_commands.describe(user="who's going to be DMed")
+@app_commands.checks.has_role(REQUIRED_ROLE_ID)
+async def dm(interaction: discord.Interaction, user: discord.Member):
+    try:
+        await user.send("_ \n\n\n\n\n _        sep  over.   ﹙   <a:emoji_4:1315006475978149950>   ﹚   ✿\n-# _ _         check invites    .    ◟⠀run **/breakup** in ticket\n\n\n\n\n_ _")
+        await interaction.response.send_message("User has been DMed.", ephemeral=True)
+    except discord.Forbidden:
+        await interaction.response.send_message("I couldn't DM that user. They might have DMs off.", ephemeral=True)
+
+@bot.tree.command(name="regret", description="regret, self-blame, inability to move on . . .")
+@app_commands.describe(invites="invites gained", portals="other portals that posted", link="invite link", type="server type")
+async def regret(interaction: discord.Interaction, invites: str, portals: str, link: str, type: str):
+    channel = await interaction.guild.create_text_channel(name=f"ticket-{interaction.user.name}", category=None)
+    embed = discord.Embed(
+        description=f"*invites:* {invites}\n**portals:** {portals}\n**link:** {link}\n**type:** {type}",
+        color=BLUE
+    )
+    await channel.send(embed=embed, view=CloseButton())
+    await interaction.response.send_message(f"Ticket created: {channel.mention}", ephemeral=True)
+
+# ----- Events -----
 @bot.event
 async def on_ready():
     print(f"Logged in as {bot.user}")
@@ -110,17 +220,6 @@ async def on_ready():
         print(f"Synced {len(synced)} slash commands.")
     except Exception as e:
         print(e)
-
-@bot.event
-async def on_ready():
-    print(f"Logged in as {bot.user}")
-    try:
-        synced = await bot.tree.sync()
-        print(f"Synced {len(synced)} slash commands.")
-    except Exception as e:
-        print(e)
-
-    # Set custom status
     activity = discord.Activity(type=discord.ActivityType.listening, name="nobody gets me.")
     await bot.change_presence(status=discord.Status.dnd, activity=activity)
 
