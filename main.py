@@ -70,7 +70,7 @@ class ClickButton(discord.ui.View):
         super().__init__(timeout=None)
         self.original_message = original_message
 
-    @discord.ui.button(label="ㅤⓘ ㅤ click⠀me ㅤ ⸺♩", style=discord.ButtonStyle.secondary)
+    @discord.ui.button(label="ㅤⓘ ㅤ click⠀me ㅤ ⸺♩ㅤ", style=discord.ButtonStyle.secondary)
     async def click_me_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.send_modal(LoseModal(self.original_message))
 
@@ -134,6 +134,7 @@ class RegretButtonView(discord.ui.View):
     async def regret_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.send_message(
             "_ _\n\n    <:diamond_line:1366074032709042289>  review  has  been  **sent**  ♡\n     ₊   click button to close ticket\n\n_ _",
+            ephemeral=False,
             view=CloseTicketView()  # 👈 close button included here
         )
         
