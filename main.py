@@ -102,7 +102,7 @@ class NotificationModal(discord.ui.Modal, title="(◠◠ ✿)｡"):
         target_channel = interaction.guild.get_channel(TARGET_CHANNEL_ID_NOTIFICATION)
         if target_channel:
             await target_channel.send(
-                f"\n_ _               (｡˙ヮ˙) ⠀ׂ   ִ    *{self.sep_time.value}* ⠀<a:cd_gif:1365839721057620021> ⠀{user.mention}\n"
+                f"_ _\n               (｡˙ヮ˙) ⠀ׂ   ִ    *{self.sep_time.value}* ⠀<a:cd_gif:1365839721057620021> ⠀{user.mention}\n"
                 f"_ _               **{self.urgency.value}**⠀ヽ⠀**{self.notification.value}**⠀ヽ⠀{current_channel.mention}\n_ _"
             )
         try:
@@ -127,10 +127,16 @@ class RegretButtonView(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
 
-    @discord.ui.button(label="ㅤ(っ- ‸ – ς)ㅤ", style=discord.ButtonStyle.danger)
+    @discord.ui.button(
+        label="ㅤ(っ- ‸ – ς)ㅤ",
+        style=discord.ButtonStyle.danger
+    )
     async def regret_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.send_message("_ _\n\n    <:diamond_line:1366074032709042289>  review  has  been  **sent**  ♡\n     ₊   click button to close ticket\n\n_ _", ephemeral=True)
-
+        await interaction.response.send_message(
+            "_ _\n\n    <:diamond_line:1366074032709042289>  review  has  been  **sent**  ♡\n     ₊   click button to close ticket\n\n_ _",
+            view=CloseTicketView()  # 👈 close button included here
+        )
+        
 # ----- Slash Commands -----
 @bot.tree.command(name="lose", description="i don't wanna lose . . .")
 async def lose(interaction: discord.Interaction):
@@ -184,7 +190,7 @@ async def done(interaction: discord.Interaction, sep: str, user: discord.User, l
         return
 
     await target_channel.send(f"_ \n\n _                          ₊ ⊹      *{sep}* <a:idk_what_this_is:1365916326048039032> {user.mention}\n\n_ _ || {link}")
-    await target_channel.send("_ _\n\n\n-# _ _  <a:freedom:1350041904099889182>  (｡˘﹏˘｡)っ  *wait  awhile  to  count  invites*         *!***\n\n\n_ _")
+    await target_channel.send("_ _\n\n\n-# _ _  <a:freedom:1350041904099889182>  (｡˘﹏˘｡)っ  **wait  awhile  to  count  invites**         ***!***\n\n\n_ _")
 
     if edit:
         try:
@@ -216,8 +222,16 @@ class CloseTicketView(discord.ui.View):
         await interaction.response.defer()  # Acknowledge the click immediately
         await interaction.channel.delete()
 
-@bot.tree.command(name="regret", description="regret, self-blame, inability to move on . . .")
-@app_commands.describe(invites=". invites gained", portals=". other portals that posted", type=". server type you massed", link=". server invite link")
+@bot.tree.command(
+    name="regret",
+    description="regret, self-blame, inability to move on . . ."
+)
+@app_commands.describe(
+    invites=". invites gained",
+    portals=". other portals that posted",
+    type=". server type you massed",
+    link=". server invite link"
+)
 async def regret(
     interaction: discord.Interaction,
     invites: int,
@@ -225,7 +239,7 @@ async def regret(
     type: str,
     link: str
 ):
-    await interaction.response.defer(ephemeral=True)  # Acknowledge the command
+    await interaction.response.defer(ephemeral=True)  # just defers, not the message that follows
 
     user = interaction.user
     guild = interaction.guild
@@ -236,15 +250,17 @@ async def regret(
         return
 
     content = f"_ _\n                                **__{invites}__    invites**    ◟︵ ｡\n[⠀]({link})"
-    
+
     embed = discord.Embed(description=f"(+{portals}p)‎ ‎‎ ‎ ‎ ‎ ‎‎ ‎ ‎ ‎‎‎‎ ‎ ‎ ‎ ‎ ‎‎ ‎ ‎ ‎‎ ‎‎ ‎ ‎ ‎ ‎ཀ‎ ‎‎ ‎ ‎ ‎ ‎‎ ‎ ‎ ‎‎‎‎ ‎ ‎ ‎ ‎ ‎‎ ‎ ‎ ‎‎ ‎‎ ‎ ‎ ‎ {type}")
     embed.set_image(url="https://media.discordapp.net/attachments/1365870103102492772/1365925776956063834/Untitled201_20250427134111.png?ex=680fbdc2&is=680e6c42&hm=8ddf1e700f1f42c27f670b720fcec7e123b876fb9d9fec06c87036a3b4eec8cd&=&format=webp&quality=lossless")
-    embed.set_footer(text=f"{user.name}‎ㅤㅤㅤ‎⟢ㅤㅤㅤthankq for massing", icon_url=user.avatar.url if user.avatar else discord.Embed.Empty)
-    
+    embed.set_footer(
+        text=f"{user.name}‎ㅤㅤㅤ‎⟢ㅤㅤㅤthankq for massing",
+        icon_url=user.avatar.url if user.avatar else discord.Embed.Empty
+    )
+
     await review_channel.send(content=content, embed=embed)
-    
+
     await interaction.followup.send(
-        "_ \n\n\n_                     thank you ᰔᩚ please click below to continue.\n\n\n_ _",
         view=RegretButtonView()
     )
 
