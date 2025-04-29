@@ -189,7 +189,7 @@ async def done(interaction: discord.Interaction, sep: str, user: discord.User, l
         await interaction.followup.send("Target channel not found.")
         return
 
-    await target_channel.send(f"_ \n\n _                          ₊ ⊹      *{sep}* <a:idk_what_this_is:1365916326048039032> {user.mention}\n\n_ _ || {link}")
+    await target_channel.send(f"_ _\n\n                          ₊ ⊹      *{sep}* <a:idk_what_this_is:1365916326048039032> {user.mention}\n\n_ _ [⠀]( {link} )")
     await target_channel.send("_ _\n\n\n-# _ _  <a:freedom:1350041904099889182>  (｡˘﹏˘｡)っ  **wait  awhile  to  count  invites**         ***!***\n\n\n_ _")
 
     if edit:
@@ -261,7 +261,7 @@ async def regret(
     await review_channel.send(content=content, embed=embed)
 
     await interaction.followup.send(
-        view=RegretButtonView()
+        view=CloseTicketView()
     )
 
 # ----- Events -----
