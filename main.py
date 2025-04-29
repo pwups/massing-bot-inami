@@ -208,7 +208,7 @@ async def done(interaction: discord.Interaction, sep: str, user: discord.User, l
 async def dm(interaction: discord.Interaction, user: discord.Member):
     await interaction.response.defer(ephemeral=True)
     try:
-        await user.send("_ \n\n\n\n\n _        sep  over.   ﹙   <a:emoji_4:1315006475978149950>   ﹚   ✿\n-# _ _         check invites    .    ◟⠀run **/breakup** in ticket\n\n\n\n\n_ _")
+        await user.send("_ \n\n\n\n\n _        sep  over.   ﹙   <a:emoji_4:1315006475978149950>   ﹚   {user.mention}   ✿\n-# _ _         check invites    .    ◟⠀run **/regret** in ticket\n\n\n\n\n_ _")
         await interaction.followup.send("User has been DMed.")
     except discord.Forbidden:
         await interaction.followup.send("I couldn't DM that user. They might have DMs off.")
