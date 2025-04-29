@@ -261,6 +261,7 @@ async def regret(
     await review_channel.send(content=content, embed=embed)
 
     await interaction.followup.send(
+        "_ _\n\n    <:diamond_line:1366074032709042289>  review  has  been  **sent**  ♡\n     ₊   click button to close ticket\n\n_ _",
         view=CloseTicketView()
     )
 
