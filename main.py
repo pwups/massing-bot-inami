@@ -218,7 +218,7 @@ async def dm(interaction: discord.Interaction, user: discord.Member):
 @bot.tree.command(name="close", description="miel only")
 @app_commands.describe(user="The user to notify", reason="Reason for closing the ticket")
 async def close(interaction: discord.Interaction, user: discord.User, reason: str):
-    if interaction.user.id != MIEL_ID:
+    if interaction.user.id != 1252888975635382368:
         await interaction.response.send_message("You are not allowed to use this command.", ephemeral=True)
         return
 
