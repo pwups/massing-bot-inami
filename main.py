@@ -215,6 +215,25 @@ async def dm(interaction: discord.Interaction, user: discord.Member):
     except discord.Forbidden:
         await interaction.followup.send("I couldn't DM that user. They might have DMs off.")
 
+@bot.tree.command(name="close", description="miel only")
+@app_commands.describe(user="The user to notify", reason="Reason for closing the ticket")
+async def close(interaction: discord.Interaction, user: discord.User, reason: str):
+    if interaction.user.id != MIEL_ID:
+        await interaction.response.send_message("You are not allowed to use this command.", ephemeral=True)
+        return
+
+    # Respond immediately to avoid "Unknown interaction" error
+    await interaction.response.send_message("Closing ticket...", ephemeral=True)
+
+    try:
+        await user.send(f"_ _\n_ _<:b_blank001:1349341503163732091><:b_blank001:1349341503163732091> <:b_blank001:1349341503163732091><:b_blank001:1349341503163732091>**ticket  closed**　₊　<a:idk_what_this_is:1365916326048039032>　˚\n_ _<:b_blank001:1349341503163732091> <:b_blank001:1349341503163732091> reason   ◟  {reason}   ꔫ\n_ _")
+    except discord.Forbidden:
+        await interaction.followup.send("Could not DM the user. They might have DMs disabled.", ephemeral=True)
+        return
+
+    # Delete the channel after a short delay to ensure messages are sent
+    await interaction.channel.delete()
+
 # ----- Regret Command and Close Ticket View -----
 class CloseTicketView(discord.ui.View):
     def __init__(self):
